@@ -1,67 +1,138 @@
-# Template de démonstration
+# Wallos
 
-Ceci est la documentation utilisateur de l'intégration. Gladys ré-héberge ce
-fichier et affiche un lien **Documentation** permanent vers lui dans l'écran
-de configuration (dans la langue de l'utilisateur, avec l'anglais en repli) —
-c'est au moment de configurer que l'utilisateur en a le plus besoin. Gardez
-les courtes indications d'accueil dans les blocs `section` du `config_schema`
-du manifest ; mettez ici le pas-à-pas détaillé (captures d'écran, dépannage…).
+Vos abonnements dans Gladys : ce qu'ils coûtent par mois et par an, les prochains paiements et un rappel
+avant chacun, lus depuis votre propre [Wallos](https://github.com/ellite/Wallos), le gestionnaire
+d'abonnements auto-hébergé.
+
+L'intégration ne fait que lire : elle n'écrit jamais dans Wallos, n'ajoute ni ne modifie aucun abonnement.
+Elle parle directement à votre Wallos sur votre réseau, avec votre clé d'API. Non affiliée à Wallos.
 
 ## Ce que vous obtenez
 
-Six appareils de démonstration apparaissent après l'installation : une
-station météo (vraies données Open-Meteo), un interrupteur, une lampe
-variable, une prise connectée avec mesure de puissance, un détecteur de
-mouvement et une caméra.
+- Un **appareil Wallos** : coût mensuel et coût annuel estimé de vos abonnements actifs (dans votre devise
+  principale), nombre d'abonnements actifs, jours avant le prochain paiement et son nom.
+- Un **appareil par abonnement actif** : prix d'un paiement, jours avant le prochain paiement et sa date.
+- Un **widget de tableau de bord** : le coût mensuel et annuel, puis les 8 prochains paiements.
+- Un **déclencheur de scène** : un paiement aujourd'hui, demain, dans 3 ou 7 jours.
+- Une **action de scène** : lire les paiements des 7, 14 ou 31 prochains jours, en une phrase à envoyer par
+  message ou à faire lire à voix haute.
+
+## Prérequis
+
+- Gladys Assistant 5.1 ou plus récent.
+- Wallos (testé avec la 5.10.0), joignable depuis la machine de Gladys (même réseau, VPN ou adresse
+  publique).
+- La clé d'API de votre utilisateur Wallos.
 
 ## Configuration
 
-1. Ouvrez l'onglet **Configuration** de l'intégration.
-2. Renseignez la **latitude** et la **longitude** que la station météo de
-   démonstration doit observer (Paris par défaut), et choisissez votre unité
-   de température. L'**intervalle de rafraîchissement** règle la fréquence
-   de lecture de la station météo et de la puissance de la prise : toutes
-   les 5 minutes par défaut, toutes les minutes au plus.
-3. Enregistrez : les appareils apparaissent dans l'onglet **Découverte**,
-   prêts à être ajoutés.
+### Trouver la clé d'API
 
-Le réglage **Préférer la connexion locale** pilote la prise de
-démonstration : elle affiche en badge le canal réellement utilisé (local ou
-cloud), avec un point orange quand elle fonctionne en mode dégradé (local
-refusé, bascule cloud).
+1. Dans Wallos, ouvrez votre **Profil** (le menu sous votre avatar).
+2. La section **Clé API** affiche votre clé : copiez-la en entier.
 
-## Actions
+La clé donne accès à tous les abonnements de votre utilisateur : gardez-la aussi secrète que votre mot de
+passe. L'intégration l'envoie dans le corps de ses requêtes, jamais dans l'adresse : elle n'apparaît donc
+pas dans les journaux d'un proxy inverse.
 
-- **Tester le fournisseur météo** — effectue une requête en direct vers
-  Open-Meteo et affiche la température et l'humidité actuelles sous le
-  bouton.
-- **Identifier un appareil** — choisissez un de vos appareils dans la liste
-  et il se signale (la lampe de démonstration « clignote » dans les logs).
+### Réglages
 
-## Scènes
+| Réglage                           | Rôle                                                                                                |
+| --------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Adresse de Wallos                 | L'adresse à laquelle vous ouvrez Wallos, ex. `http://192.168.1.20:8282` ou `https://abos.ma.maison` |
+| Clé d'API                         | La clé copiée ci-dessus                                                                             |
+| Accepter un certificat auto-signé | Seulement pour une adresse `https` dont vous avez fait le certificat vous-même                      |
+| Fréquence de mise à jour          | 15 ou 30 minutes, 1 heure (par défaut), 3 ou 6 heures                                               |
+| Langue des textes                 | Noms des fonctionnalités (à leur création) et phrases des scènes                                    |
 
-L'intégration ajoute ses propres cartes à l'éditeur de scènes (Gladys 5.1
-ou plus récent), dans la catégorie **Intégrations** :
+Enregistrez, puis cliquez sur **Tester la connexion** : la réponse donne la version de Wallos, le nombre
+d'abonnements actifs et leur coût mensuel. Ouvrez ensuite l'onglet **Découverte** et ajoutez l'appareil
+**Wallos** et les abonnements que vous voulez suivre dans Gladys.
 
-- **Mouvement détecté** (déclencheur) — lance la scène quand un détecteur
-  de démonstration voit bouger quelque chose. Choisissez éventuellement le
-  détecteur et ce qui a bougé (personne, animal) ; laissés vides, toute
-  détection correspond. Les actions suivantes peuvent lire ce qui a bougé
-  avec `{{triggerEvent.data.target}}`.
-- **Identifier un appareil** (action) — fait se signaler l'appareil choisi.
-  Elle indique si l'appareil a pu se signaler, pour que les actions
-  suivantes puissent en dépendre.
+## Appareils
 
-## Tableau de bord
+| Appareil   | Fonctionnalités                                                                                                         |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Wallos     | Coût mensuel, Coût annuel estimé, Abonnements actifs, Jours avant le prochain paiement, Prochain paiement (nom et date) |
+| Abonnement | Prix, Jours avant le paiement, Date du prochain paiement                                                                |
 
-Ajoutez le widget **État de la démo** à un tableau de bord : il affiche en
-direct la température de la station météo et la puissance de la prise du
-bureau, la connexion utilisée par la prise (en orange si dégradée) et la
-position observée. Son bouton **Identifier la lampe** fait se signaler la
-lampe de démonstration.
+Le coût mensuel est calculé comme la page de statistiques de Wallos : un paiement hebdomadaire compte
+4,35 fois par mois, un paiement annuel pour un douzième, un paiement unique pour rien ; les prix dans une autre
+devise sont convertis avec les taux de change de Wallos (à régler dans Wallos avec une clé Fixer, sinon ils
+comptent 1 pour 1). Le coût annuel vaut douze fois le coût mensuel.
+
+Les montants en euros, dollars ou livres affichent leur unité ; une autre devise est ajoutée au nom de
+l'appareil (`Salle de sport (CHF)`). Seuls les abonnements actifs sont listés. Quand la date de paiement d'un
+abonnement est passée (renouvellement automatique désactivé), la date reste mais le nombre de jours n'est plus mis à jour : il garde sa dernière valeur.
+
+Pour être prévenu quand le coût mensuel dépasse un seuil, utilisez le déclencheur standard de Gladys
+**« Changement d'état d'un appareil »** sur le **Coût mensuel** de l'appareil Wallos, avec la condition
+« supérieur » : pas besoin d'un déclencheur de l'intégration.
+
+## Widget de tableau de bord
+
+**Wallos : prochains paiements** affiche le coût mensuel et le coût annuel estimé, puis les 8 prochains
+paiements, du plus proche au plus lointain : l'abonnement, son prix et sa date, et un badge « aujourd'hui »
+en rouge, « demain » ou dans les 3 jours en orange. Touchez un paiement pour voir sa catégorie. Le pied de
+page donne l'heure de la dernière lecture. Il couvre tous les abonnements actifs de Wallos, ajoutés à Gladys
+ou non.
+
+## Déclencheurs de scène
+
+**Wallos : paiement à venir** : un paiement d'un abonnement actif tombe aujourd'hui, demain, dans 3 ou
+7 jours (au choix). Laissez **Abonnement** vide pour être prévenu pour tous, ou choisissez un abonnement
+ajouté à Gladys (pas l'appareil Wallos, qui ne correspond jamais). Il se déclenche une fois par abonnement et date de paiement, ce jour-là, à la première
+lecture de la journée. Variables : nom de l'abonnement, prix, devise, date du paiement (AAAA-MM-JJ) et une
+phrase toute prête.
+
+Ce qui a été déclenché est gardé dans les données de l'intégration : un redémarrage ne déclenche rien deux
+fois.
+
+## Actions de scène
+
+**Wallos : lire les prochains paiements** : les paiements des 7, 14 ou 31 prochains jours, du plus proche au
+plus lointain, avec leur prix, puis le total dans votre devise principale. Sorties : `text`, `count`,
+`total`.
+
+L'action relit Wallos quand la dernière lecture date de plus d'un intervalle de mise à jour.
+
+## Exemples de scènes
+
+- **Rappel avant un paiement** : déclencheur « paiement à venir », 3 jours, tous les abonnements ; action :
+  envoyer un message avec `{{triggerEvent.data.text}}`.
+- **Point du lundi matin** : chaque lundi à 8 h, action « lire les prochains paiements », 7 jours, puis faire
+  lire son `text` par l'enceinte de la cuisine.
+- **Surveillance du budget** : déclencheur « Changement d'état d'un appareil » sur le coût mensuel,
+  supérieur à 100 ; action : prévenir la famille sur Telegram.
+
+## Confidentialité et données
+
+- L'intégration lit Wallos et n'y écrit jamais.
+- La clé d'API est gardée par Gladys comme tout réglage secret, et jamais écrite dans les journaux.
+- Les journaux ne contiennent jamais de montant, de nom d'abonnement ni l'adresse de Wallos, même en
+  niveau debug : seulement des nombres, des identifiants et des nombres de jours.
+- Les noms des abonnements deviennent des noms d'appareils, que vous pouvez renommer.
+- Le volume de données de l'intégration ne garde que les rappels déjà envoyés (identifiants et dates).
 
 ## Dépannage
 
-L'intégration journalise tout ce qu'elle fait : consultez les logs de
-l'intégration depuis l'interface Gladys (ou `docker logs` sur l'hôte) avec
-`LOG_LEVEL=debug` pour le détail complet.
+| Message                                   | Que faire                                                                                          |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Wallos refuse la clé d'API                | La clé a été copiée en partie, ou vient d'un autre Wallos : copiez-la à nouveau (Profil → Clé API) |
+| Wallos ne répond pas                      | Vérifiez l'adresse depuis la machine de Gladys (port, `http`/`https`) et que Wallos tourne         |
+| Le certificat de Wallos n'est pas reconnu | Utilisez l'adresse `http` du réseau local, ou activez « Accepter un certificat auto-signé »        |
+| Cette adresse ne répond pas comme l'API   | L'adresse mène à une autre page (portail de connexion, proxy inverse) : donnez celle de Wallos     |
+| Un appareil n'a pas de valeur             | Ajoutez-le dans l'onglet Découverte : seuls les appareils ajoutés reçoivent des états              |
+
+Les journaux de l'intégration (Intégrations → Wallos → journaux) disent ce qui s'est passé ; réglez
+`LOG_LEVEL=debug` pour plus de détails.
+
+## Limites
+
+- Lecture seule : aucun abonnement ne peut être ajouté ou modifié depuis Gladys.
+- Un seul Wallos, un seul utilisateur (celui de la clé d'API) ; les autres membres d'un foyer ne sont pas lus
+  séparément.
+- Les dates de paiement sont celles que garde Wallos : il les avance une fois par jour par sa propre tâche.
+- Le rappel part à la première lecture de la journée : jusqu'à un intervalle de mise à jour après minuit.
+- Testée contre un vrai Wallos 5.10.0 en Docker, pas encore sur une installation Gladys avec un vrai Wallos :
+  vos retours sont bienvenus.

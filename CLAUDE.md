@@ -32,15 +32,20 @@ pushing.
 
 ```
 index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
-src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+src/app.js                        registers every SDK handler on a GladysIntegration (or the fake)
+src/monitor.js                    refresh cycle: Wallos → devices, states, scene trigger
+src/wallos.js                     Wallos API client (POST forms, read endpoints only) and parsing
+src/http.js                       the one network call (node:http/https, self-signed on demand)
+src/devices.js                    the Wallos summary device, one device per active subscription
+src/actions.js                    scene action read_payments; config action check_now
+src/widgets.js                    dashboard widget `upcoming` (status + card-list)
+src/texts.js                      texts of the container in en/fr/de/es, number and date formats
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
+src/store.js                      /data/wallos.json: payment reminders already sent (atomic)
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
-test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (en and fr mandatory)
+test/                             node --test, against the SDK's fake Gladys and a fake Wallos
+test/fixtures/wallos/             real answers of Wallos 5.10.0 (fake subscriptions)
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -70,8 +75,9 @@ test/                             node --test, against the SDK's fake Gladys (in
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** exists in English, French, German and Spanish: action
+  messages, manifest texts, feature names, widget texts and
+  `docs/{en,fr,de,es}.md`, kept in sync (`test/i18n.test.js`).
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -233,3 +239,34 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - Docs `en`, `fr`, `de`, `es` avec les mêmes sections.
 - Chauffe, ouverture, sécurité : ne rien rendre pilotable « comme un thermostat » ou par un assistant
   vocal quand une erreur serait dangereuse (leçon d'OctoPrint).
+
+## Wallos (cette intégration)
+
+- **API** : `api/<domaine>/<action>.php`, clé de l'utilisateur (`api_key`, Profil → Clé API) en GET ou POST
+  (`$_REQUEST`) : on l'envoie en **formulaire POST**, jamais dans l'URL (journaux d'un proxy inverse). Seuls
+  `status/version.php`, `currencies/get_currencies.php` et `subscriptions/get_subscriptions.php` sont lus.
+  Réponses enregistrées sur Wallos 5.10.0 (`bellamy/wallos`), `test/fixtures/wallos`.
+- **Mauvaise clé = HTTP 200** avec `{"success":false,"title":"Invalid API key"}` : l'erreur se lit dans le
+  JSON, pas dans le statut. Une page hors API redirige (302) vers `login.php`.
+- **`get_monthly_cost.php` est faux pour les paiements uniques** (cycle 5) : sa boucle retombe sur
+  « +1 month » et compte le paiement chaque mois avant sa date (vu sur 5.10.0 : un billet à 59 € de
+  novembre compté en octobre). Le coût mensuel est donc calculé ici avec `getPricePerMonth` de la page
+  statistiques (30 jours, 4,35 semaines, 1/12 an, 0 pour l'unique) et converti comme Wallos (prix / `rate`
+  de la devise, `rate` relatif à la devise principale, 1 tant que Fixer n'est pas réglé). `number_format`
+  de PHP met une virgule de milliers (`"1,234.56"`) : `amountOf` l'enlève.
+- **Cycles** : 1 jour, 2 semaine, 3 mois, 4 an, 5 unique ; `frequency` = tous les N. `inactive` 0/1.
+  `next_payment` est avancé une fois par jour par la tâche cron de Wallos ; sans renouvellement automatique
+  il peut rester dans le passé : pas de « jours avant » négatif publié.
+- **Instance de test** : `bellamy/wallos` sur un réseau en pont, utilisateur créé par `POST
+/registration.php` (pas de CSRF au premier compte), abonnements insérés dans SQLite
+  (`/var/www/html/db/wallos.db`), clé lue dans la table `user`.
+- **Choix** : le déclencheur, le widget et l'action couvrent **tous les abonnements actifs** de Wallos
+  (l'utilisateur a déjà choisi quoi suivre dans Wallos), ajoutés à Gladys ou non ; le filtre `device` du
+  déclencheur restreint à un abonnement ajouté. Le seuil de coût mensuel passe par le déclencheur standard
+  « Changement d'état de l'appareil ». Un rappel se déclenche le jour exact de chaque palier (0, 1, 3,
+  7 jours), à la première lecture du jour. Badge du widget : 16 caractères au plus (« dans 133 j »).
+- **Confidentialité** : aucun montant, nom d'abonnement, clé ni adresse dans les journaux, même en debug
+  (`test/logs.test.js`).
+- **`read_payments`** compte chaque échéance de la fenêtre (un abonnement hebdomadaire paie plusieurs fois
+  en 31 jours) : `nextPayment` avance la date comme `strtotime` de PHP (31/01 + 1 mois = 03/03). Le coût
+  mensuel est sommé sans arrondi puis arrondi une fois, comme Wallos.

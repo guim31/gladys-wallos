@@ -1,0 +1,280 @@
+{
+  "success": true,
+  "title": "currencies",
+  "main_currency": 1,
+  "currencies": [
+    {
+      "id": 1,
+      "name": "Euro",
+      "symbol": "€",
+      "code": "EUR",
+      "rate": "1",
+      "in_use": true
+    },
+    {
+      "id": 2,
+      "name": "US Dollar",
+      "symbol": "$",
+      "code": "USD",
+      "rate": "1.08",
+      "in_use": true
+    },
+    {
+      "id": 3,
+      "name": "Japanese Yen",
+      "symbol": "¥",
+      "code": "JPY",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 4,
+      "name": "Bulgarian Lev",
+      "symbol": "лв",
+      "code": "BGN",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 5,
+      "name": "Czech Republic Koruna",
+      "symbol": "Kč",
+      "code": "CZK",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 6,
+      "name": "Danish Krone",
+      "symbol": "kr",
+      "code": "DKK",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 7,
+      "name": "British Pound Sterling",
+      "symbol": "£",
+      "code": "GBP",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 8,
+      "name": "Hungarian Forint",
+      "symbol": "Ft",
+      "code": "HUF",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 9,
+      "name": "Polish Zloty",
+      "symbol": "zł",
+      "code": "PLN",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 10,
+      "name": "Romanian Leu",
+      "symbol": "lei",
+      "code": "RON",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 11,
+      "name": "Swedish Krona",
+      "symbol": "kr",
+      "code": "SEK",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 12,
+      "name": "Swiss Franc",
+      "symbol": "Fr",
+      "code": "CHF",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 13,
+      "name": "Icelandic Króna",
+      "symbol": "kr",
+      "code": "ISK",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 14,
+      "name": "Norwegian Krone",
+      "symbol": "kr",
+      "code": "NOK",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 15,
+      "name": "Russian Ruble",
+      "symbol": "₽",
+      "code": "RUB",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 16,
+      "name": "Turkish Lira",
+      "symbol": "₺",
+      "code": "TRY",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 17,
+      "name": "Australian Dollar",
+      "symbol": "$",
+      "code": "AUD",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 18,
+      "name": "Brazilian Real",
+      "symbol": "R$",
+      "code": "BRL",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 19,
+      "name": "Canadian Dollar",
+      "symbol": "$",
+      "code": "CAD",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 20,
+      "name": "Chinese Yuan",
+      "symbol": "¥",
+      "code": "CNY",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 21,
+      "name": "Hong Kong Dollar",
+      "symbol": "HK$",
+      "code": "HKD",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 22,
+      "name": "Indonesian Rupiah",
+      "symbol": "Rp",
+      "code": "IDR",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 23,
+      "name": "Israeli New Sheqel",
+      "symbol": "₪",
+      "code": "ILS",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 24,
+      "name": "Indian Rupee",
+      "symbol": "₹",
+      "code": "INR",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 25,
+      "name": "South Korean Won",
+      "symbol": "₩",
+      "code": "KRW",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 26,
+      "name": "Mexican Peso",
+      "symbol": "Mex$",
+      "code": "MXN",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 27,
+      "name": "Malaysian Ringgit",
+      "symbol": "RM",
+      "code": "MYR",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 28,
+      "name": "New Zealand Dollar",
+      "symbol": "NZ$",
+      "code": "NZD",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 29,
+      "name": "Philippine Peso",
+      "symbol": "₱",
+      "code": "PHP",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 30,
+      "name": "Singapore Dollar",
+      "symbol": "S$",
+      "code": "SGD",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 31,
+      "name": "Thai Baht",
+      "symbol": "฿",
+      "code": "THB",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 32,
+      "name": "South African Rand",
+      "symbol": "R",
+      "code": "ZAR",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 33,
+      "name": "Ukrainian Hryvnia",
+      "symbol": "₴",
+      "code": "UAH",
+      "rate": "1",
+      "in_use": false
+    },
+    {
+      "id": 34,
+      "name": "New Taiwan Dollar",
+      "symbol": "NT$",
+      "code": "TWD",
+      "rate": "1",
+      "in_use": false
+    }
+  ],
+  "notes": []
+}
