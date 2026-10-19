@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-19
+
 ### Added
 
 - A **Wallos** device: monthly cost and estimated yearly cost of the active subscriptions (main currency,
@@ -26,4 +28,5 @@ the notes of the version's GitHub Release.
   certificates accepted on demand.
 - Texts and documentation in English, French, German and Spanish.
 
-[Unreleased]: https://github.com/guim31/gladys-wallos/commits/main
+[Unreleased]: https://github.com/guim31/gladys-wallos/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/guim31/gladys-wallos/releases/tag/v1.0.0
