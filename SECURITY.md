@@ -28,6 +28,14 @@ Gladys before reporting a problem.
 
 ## Scope
 
+The integration holds the API key of a Wallos user, which gives access to every subscription of that
+user. Gladys stores it with the configuration and passes it to the container; the integration only sends
+it to the address of Wallos given in the configuration, in the body of POST requests to the read
+endpoints of the API (never in a URL), and never writes it to `/data` or to the logs. Under `/data`, it
+keeps which payment reminders were sent (identifiers and dates, no amount or name). It talks to Wallos
+only, on the network of the user; certificate checks are skipped only when "Accept a self-signed
+certificate" is enabled.
+
 In scope: the code of this repository and the Docker image it publishes.
 
 Out of scope: Gladys Assistant itself (see its

@@ -1,177 +1,490 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "Wallos",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Your Wallos subscriptions in Gladys: monthly cost, next payments and reminders.",
+    "fr": "Vos abonnements Wallos dans Gladys : coût mensuel, prochains paiements et rappels.",
+    "de": "Deine Wallos-Abonnements in Gladys: monatliche Kosten, nächste Zahlungen und Erinnerungen.",
+    "es": "Sus suscripciones de Wallos en Gladys: coste mensual, próximos pagos y recordatorios."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
+  "docker_image": "ghcr.io/guim31/gladys-wallos:1.0.0",
   "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-wallos/main/cover.png",
+  "categories": ["services"],
+  "transports": ["local"],
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "Connection to Wallos",
+        "fr": "Connexion à Wallos",
+        "de": "Verbindung zu Wallos",
+        "es": "Conexión con Wallos"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "In Wallos, open Profile, copy your API key and paste it below with the address of Wallos. Then add the Wallos device and the subscriptions you want in the Discover tab.",
+        "fr": "Dans Wallos, ouvrez Profil, copiez votre clé d'API et collez-la ci-dessous avec l'adresse de Wallos. Ajoutez ensuite l'appareil Wallos et les abonnements voulus dans l'onglet Découverte.",
+        "de": "Öffne in Wallos dein Profil, kopiere deinen API-Schlüssel und füge ihn unten mit der Adresse von Wallos ein. Füge dann das Gerät Wallos und die gewünschten Abonnements im Tab „Entdecken“ hinzu.",
+        "es": "En Wallos, abra Perfil, copie su clave de API y péguela abajo con la dirección de Wallos. Después añada el dispositivo Wallos y las suscripciones que desee en la pestaña Descubrir."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://github.com/guim31/gladys-wallos/blob/main/docs/en.md",
+          "label": {
+            "en": "Setup guide",
+            "fr": "Guide d'installation",
+            "de": "Installationsanleitung",
+            "es": "Guía de instalación"
+          }
+        },
+        {
+          "url": "https://github.com/ellite/Wallos",
+          "label": {
+            "en": "Wallos on GitHub",
+            "fr": "Wallos sur GitHub",
+            "de": "Wallos auf GitHub",
+            "es": "Wallos en GitHub"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
+      "key": "url",
+      "type": "string",
+      "label": {
+        "en": "Address of Wallos",
+        "fr": "Adresse de Wallos",
+        "de": "Adresse von Wallos",
+        "es": "Dirección de Wallos"
       },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
+      "description": {
+        "en": "The address you open Wallos with, reachable from Gladys.",
+        "fr": "L'adresse à laquelle vous ouvrez Wallos, joignable depuis Gladys.",
+        "de": "Die Adresse, unter der du Wallos öffnest, von Gladys aus erreichbar.",
+        "es": "La dirección con la que abre Wallos, accesible desde Gladys."
+      },
+      "placeholder": {
+        "en": "e.g. http://192.168.1.20:8282",
+        "fr": "ex. http://192.168.1.20:8282",
+        "de": "z. B. http://192.168.1.20:8282",
+        "es": "p. ej. http://192.168.1.20:8282"
+      },
       "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
+      "default": ""
     },
     {
-      "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
-      "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
+      "key": "api_key",
+      "type": "secret",
+      "label": {
+        "en": "API key",
+        "fr": "Clé d'API",
+        "de": "API-Schlüssel",
+        "es": "Clave de API"
       },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
+      "description": {
+        "en": "Wallos → Profile → API key. Read only: the integration never writes to Wallos. Stored by Gladys, never written to the logs.",
+        "fr": "Wallos → Profil → Clé API. Lecture seule : l'intégration n'écrit jamais dans Wallos. Gardée par Gladys, jamais écrite dans les journaux.",
+        "de": "Wallos → Profil → API Key. Nur lesend: die Integration schreibt nie in Wallos. Von Gladys gespeichert, nie in die Protokolle geschrieben.",
+        "es": "Wallos → Perfil → Clave API. Solo lectura: la integración nunca escribe en Wallos. Guardada por Gladys, nunca escrita en los registros."
+      },
+      "required": true
     },
     {
-      "key": "unit",
-      "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
+      "key": "allow_self_signed",
+      "type": "boolean",
+      "label": {
+        "en": "Accept a self-signed certificate",
+        "fr": "Accepter un certificat auto-signé",
+        "de": "Selbstsigniertes Zertifikat akzeptieren",
+        "es": "Aceptar un certificado autofirmado"
+      },
+      "description": {
+        "en": "Only for an https address whose certificate you made yourself.",
+        "fr": "Seulement pour une adresse https dont vous avez fait le certificat vous-même.",
+        "de": "Nur für eine https-Adresse, deren Zertifikat du selbst erstellt hast.",
+        "es": "Solo para una dirección https cuyo certificado haya creado usted mismo."
+      },
       "required": false,
-      "default": "celsius",
+      "default": false
+    },
+    {
+      "key": "refresh_interval",
+      "type": "select",
+      "label": {
+        "en": "Refresh interval",
+        "fr": "Fréquence de mise à jour",
+        "de": "Aktualisierungsintervall",
+        "es": "Intervalo de actualización"
+      },
+      "description": {
+        "en": "How often Wallos is read. Subscriptions change rarely: one hour is plenty.",
+        "fr": "Fréquence de lecture de Wallos. Les abonnements changent rarement : une heure suffit.",
+        "de": "Wie oft Wallos gelesen wird. Abonnements ändern sich selten: eine Stunde reicht.",
+        "es": "Frecuencia de lectura de Wallos. Las suscripciones cambian poco: una hora basta."
+      },
+      "required": false,
+      "default": "60",
       "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
+        {
+          "value": "15",
+          "label": {
+            "en": "15 minutes",
+            "fr": "15 minutes",
+            "de": "15 Minuten",
+            "es": "15 minutos"
+          }
+        },
+        {
+          "value": "30",
+          "label": {
+            "en": "30 minutes",
+            "fr": "30 minutes",
+            "de": "30 Minuten",
+            "es": "30 minutos"
+          }
+        },
+        {
+          "value": "60",
+          "label": {
+            "en": "1 hour",
+            "fr": "1 heure",
+            "de": "1 Stunde",
+            "es": "1 hora"
+          }
+        },
+        {
+          "value": "180",
+          "label": {
+            "en": "3 hours",
+            "fr": "3 heures",
+            "de": "3 Stunden",
+            "es": "3 horas"
+          }
+        },
+        {
+          "value": "360",
+          "label": {
+            "en": "6 hours",
+            "fr": "6 heures",
+            "de": "6 Stunden",
+            "es": "6 horas"
+          }
+        }
       ]
     },
     {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "key": "language",
+      "type": "select",
+      "label": {
+        "en": "Language of the texts",
+        "fr": "Langue des textes",
+        "de": "Sprache der Texte",
+        "es": "Idioma de los textos"
+      },
       "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+        "en": "Names of the features (at their creation) and texts sent to the scenes.",
+        "fr": "Noms des fonctionnalités (à leur création) et textes envoyés aux scènes.",
+        "de": "Namen der Funktionen (bei ihrer Erstellung) und Texte für die Szenen.",
+        "es": "Nombres de las funciones (al crearlas) y textos enviados a las escenas."
       },
       "required": false,
-      "default": 300,
-      "min": 60,
-      "max": 3600
+      "default": "fr",
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
-      "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ]
+      "key": "check_now",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "timeout_seconds": 60
     }
   ],
   "scene_triggers": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
+      "key": "payment_due",
+      "label": {
+        "en": "Wallos: payment due soon",
+        "fr": "Wallos : paiement à venir",
+        "de": "Wallos: Zahlung bald fällig",
+        "es": "Wallos: pago próximo"
+      },
       "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+        "en": "A payment of an active subscription of Wallos is due in the chosen number of days. Once per subscription, payment date and number of days.",
+        "fr": "Un paiement d'un abonnement actif de Wallos tombe dans le nombre de jours choisi. Une fois par abonnement, date de paiement et nombre de jours.",
+        "de": "Eine Zahlung eines aktiven Wallos-Abonnements ist in der gewählten Anzahl Tage fällig. Einmal pro Abonnement, Zahlungsdatum und Anzahl Tage.",
+        "es": "Un pago de una suscripción activa de Wallos vence en el número de días elegido. Una vez por suscripción, fecha de pago y número de días."
       },
       "fields": [
         {
           "key": "device",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
+          "label": {
+            "en": "Subscription",
+            "fr": "Abonnement",
+            "de": "Abonnement",
+            "es": "Suscripción"
+          }
         },
         {
-          "key": "target",
-          "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
+          "key": "days",
+          "type": "select",
+          "required": true,
+          "default": "3",
+          "label": {
+            "en": "Payment in",
+            "fr": "Paiement dans",
+            "de": "Zahlung in",
+            "es": "Pago en"
+          },
           "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
+            {
+              "value": "0",
+              "label": {
+                "en": "The day itself",
+                "fr": "Le jour même",
+                "de": "Am selben Tag",
+                "es": "El mismo día"
+              }
+            },
+            {
+              "value": "1",
+              "label": {
+                "en": "1 day",
+                "fr": "1 jour",
+                "de": "1 Tag",
+                "es": "1 día"
+              }
+            },
+            {
+              "value": "3",
+              "label": {
+                "en": "3 days",
+                "fr": "3 jours",
+                "de": "3 Tage",
+                "es": "3 días"
+              }
+            },
+            {
+              "value": "7",
+              "label": {
+                "en": "7 days",
+                "fr": "7 jours",
+                "de": "7 Tage",
+                "es": "7 días"
+              }
+            }
           ]
         }
       ],
       "variables": [
         {
-          "key": "target",
+          "key": "name",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
+          "label": {
+            "en": "Subscription name",
+            "fr": "Nom de l'abonnement",
+            "de": "Name des Abonnements",
+            "es": "Nombre de la suscripción"
+          }
+        },
+        {
+          "key": "price",
+          "type": "number",
+          "label": {
+            "en": "Price",
+            "fr": "Prix",
+            "de": "Preis",
+            "es": "Precio"
+          }
+        },
+        {
+          "key": "currency",
+          "type": "string",
+          "label": {
+            "en": "Currency (EUR, USD…)",
+            "fr": "Devise (EUR, USD…)",
+            "de": "Währung (EUR, USD…)",
+            "es": "Divisa (EUR, USD…)"
+          }
+        },
+        {
+          "key": "due_date",
+          "type": "string",
+          "label": {
+            "en": "Payment date (YYYY-MM-DD)",
+            "fr": "Date du paiement (AAAA-MM-JJ)",
+            "de": "Zahlungsdatum (JJJJ-MM-TT)",
+            "es": "Fecha del pago (AAAA-MM-DD)"
+          }
+        },
+        {
+          "key": "text",
+          "type": "string",
+          "label": {
+            "en": "Sentence to send or read",
+            "fr": "Phrase à envoyer ou à lire",
+            "de": "Satz zum Senden oder Vorlesen",
+            "es": "Frase para enviar o leer"
+          }
         }
       ]
     }
   ],
   "scene_actions": [
     {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
+      "key": "read_payments",
+      "label": {
+        "en": "Wallos: read the next payments",
+        "fr": "Wallos : lire les prochains paiements",
+        "de": "Wallos: nächste Zahlungen lesen",
+        "es": "Wallos: leer los próximos pagos"
       },
-      "timeout_seconds": 15,
+      "description": {
+        "en": "The payments of your active subscriptions in the next days, with their price and total, as one text to send or read aloud.",
+        "fr": "Les paiements de vos abonnements actifs des prochains jours, avec leur prix et le total, en un texte à envoyer ou à lire.",
+        "de": "Die Zahlungen deiner aktiven Abonnements in den nächsten Tagen, mit Preis und Summe, als ein Text zum Senden oder Vorlesen.",
+        "es": "Los pagos de sus suscripciones activas en los próximos días, con su precio y el total, en un texto para enviar o leer."
+      },
+      "timeout_seconds": 60,
       "fields": [
         {
-          "key": "device",
+          "key": "days",
           "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
+          "required": true,
+          "default": "7",
+          "label": {
+            "en": "Within",
+            "fr": "Dans les",
+            "de": "Innerhalb von",
+            "es": "En los próximos"
+          },
+          "options": [
+            {
+              "value": "7",
+              "label": {
+                "en": "7 days",
+                "fr": "7 jours",
+                "de": "7 Tagen",
+                "es": "7 días"
+              }
+            },
+            {
+              "value": "14",
+              "label": {
+                "en": "14 days",
+                "fr": "14 jours",
+                "de": "14 Tagen",
+                "es": "14 días"
+              }
+            },
+            {
+              "value": "31",
+              "label": {
+                "en": "31 days",
+                "fr": "31 jours",
+                "de": "31 Tagen",
+                "es": "31 días"
+              }
+            }
+          ]
         }
       ],
       "outputs": [
         {
-          "key": "signalled",
-          "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "key": "text",
+          "type": "string",
+          "label": {
+            "en": "Sentence to send or read",
+            "fr": "Phrase à envoyer ou à lire",
+            "de": "Satz zum Senden oder Vorlesen",
+            "es": "Frase para enviar o leer"
+          }
+        },
+        {
+          "key": "count",
+          "type": "number",
+          "label": {
+            "en": "Number of payments",
+            "fr": "Nombre de paiements",
+            "de": "Anzahl der Zahlungen",
+            "es": "Número de pagos"
+          }
+        },
+        {
+          "key": "total",
+          "type": "number",
+          "label": {
+            "en": "Total (main currency)",
+            "fr": "Total (devise principale)",
+            "de": "Summe (Hauptwährung)",
+            "es": "Total (divisa principal)"
+          }
         }
       ]
     }
   ],
   "widgets": [
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "upcoming",
+      "label": {
+        "en": "Wallos: next payments",
+        "fr": "Wallos : prochains paiements",
+        "de": "Wallos: nächste Zahlungen",
+        "es": "Wallos: próximos pagos"
       },
-      "icon": "activity",
-      "action_timeout_seconds": 15
+      "description": {
+        "en": "Monthly and yearly cost of your subscriptions, and the next payments, from Wallos.",
+        "fr": "Coût mensuel et annuel de vos abonnements, et les prochains paiements, depuis Wallos.",
+        "de": "Monatliche und jährliche Kosten deiner Abonnements und die nächsten Zahlungen aus Wallos.",
+        "es": "Coste mensual y anual de sus suscripciones, y los próximos pagos, desde Wallos."
+      },
+      "icon": "calendar"
     }
   ]
 }

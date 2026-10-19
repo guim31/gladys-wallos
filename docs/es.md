@@ -1,0 +1,134 @@
+# Wallos
+
+Lleve sus suscripciones a Gladys: lo que cuestan al mes y al año, los próximos pagos y un recordatorio antes
+de cada uno, leídos desde su propio [Wallos](https://github.com/ellite/Wallos), el gestor de suscripciones
+autoalojado.
+
+La integración solo lee: nunca escribe en Wallos, no añade ni modifica ninguna suscripción. Habla
+directamente con su Wallos en su red, con su clave de API. Sin afiliación con Wallos.
+
+## Lo que obtiene
+
+- Un **dispositivo Wallos**: coste mensual y coste anual estimado de sus suscripciones activas (en su divisa
+  principal), número de suscripciones activas, días hasta el próximo pago y su nombre.
+- Un **dispositivo por suscripción activa**: precio de un pago, días hasta el próximo pago y su fecha.
+- Un **widget del panel**: el coste mensual y anual, y luego los 8 próximos pagos.
+- Un **desencadenante de escena**: un pago hoy, mañana, dentro de 3 o 7 días.
+- Una **acción de escena**: leer los pagos de los próximos 7, 14 o 31 días, en una frase para enviar por
+  mensaje o hacer leer en voz alta.
+
+## Requisitos
+
+- Gladys Assistant 5.1 o posterior.
+- Wallos (probado con la 5.10.0), accesible desde el equipo de Gladys (misma red, VPN o dirección pública).
+- La clave de API de su usuario de Wallos.
+
+## Configuración
+
+### Encontrar la clave de API
+
+1. En Wallos, abra su **Perfil** (el menú bajo su avatar).
+2. La sección **Clave API** muestra su clave: cópiela entera.
+
+La clave da acceso a todas las suscripciones de su usuario: guárdela tan en secreto como su contraseña. La
+integración la envía en el cuerpo de sus peticiones, nunca en la dirección: por eso no aparece en los
+registros de un proxy inverso.
+
+### Ajustes
+
+| Ajuste                             | Qué hace                                                                                        |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Dirección de Wallos                | La dirección con la que abre Wallos, p. ej. `http://192.168.1.20:8282` o `https://subs.mi.casa` |
+| Clave de API                       | La clave copiada arriba                                                                         |
+| Aceptar un certificado autofirmado | Solo para una dirección `https` cuyo certificado haya creado usted mismo                        |
+| Intervalo de actualización         | 15 o 30 minutos, 1 hora (predeterminado), 3 o 6 horas                                           |
+| Idioma de los textos               | Nombres de las funciones (al crearlas) y frases de las escenas                                  |
+
+Guarde y pulse **Probar la conexión**: la respuesta da la versión de Wallos, el número de suscripciones
+activas y su coste mensual. Después abra la pestaña **Descubrir** y añada el dispositivo **Wallos** y las
+suscripciones que desee seguir en Gladys.
+
+## Dispositivos
+
+| Dispositivo | Funciones                                                                                                             |
+| ----------- | --------------------------------------------------------------------------------------------------------------------- |
+| Wallos      | Coste mensual, Coste anual estimado, Suscripciones activas, Días hasta el próximo pago, Próximo pago (nombre y fecha) |
+| Suscripción | Precio, Días hasta el pago, Fecha del próximo pago                                                                    |
+
+El coste mensual se calcula como en la página de estadísticas de Wallos: un pago semanal cuenta 4,35 veces al
+mes, uno anual una doceava parte, un pago único nada; los precios en otra divisa se convierten con los tipos
+de cambio de Wallos (configúrelos en Wallos con una clave de Fixer; si no, cuentan 1 por 1). El coste anual es
+doce veces el coste mensual.
+
+Los importes en euros, dólares o libras muestran su unidad; otra divisa se añade al nombre del dispositivo
+(`Gimnasio (CHF)`). Solo se listan las suscripciones activas. Cuando la fecha de pago de una suscripción ya
+pasó (renovación automática desactivada), la fecha se mantiene pero el número de días queda vacío.
+
+Para recibir un aviso cuando el coste mensual supere un umbral, use el desencadenante estándar de Gladys
+**«Cambio de estado de un dispositivo»** sobre el **Coste mensual** del dispositivo Wallos, con la condición
+«mayor»: no hace falta un desencadenante de la integración.
+
+## Widget del panel
+
+**Wallos: próximos pagos** muestra el coste mensual y el coste anual estimado, y luego los 8 próximos pagos,
+del más cercano al más lejano: la suscripción, su precio y su fecha, y una insignia «hoy» en rojo, «mañana» o
+dentro de 3 días en naranja. Toque un pago para ver su categoría. El pie indica la hora de la última lectura.
+Cubre todas las suscripciones activas de Wallos, añadidas a Gladys o no.
+
+## Desencadenantes de escena
+
+**Wallos: pago próximo**: un pago de una suscripción activa vence hoy, mañana, dentro de 3 o 7 días (elija
+uno). Deje **Suscripción** vacío para recibir avisos de todas, o elija una suscripción añadida a Gladys. Se
+dispara una vez por suscripción y fecha de pago, ese día, en la primera lectura del día. Variables: nombre de
+la suscripción, precio, divisa, fecha del pago (AAAA-MM-DD) y una frase lista para usar.
+
+Lo que se ha disparado se guarda en los datos de la integración: un reinicio no dispara nada dos veces.
+
+## Acciones de escena
+
+**Wallos: leer los próximos pagos**: los pagos de los próximos 7, 14 o 31 días, del más cercano al más
+lejano, con su precio, y luego el total en su divisa principal. Salidas: `text`, `count`, `total`.
+
+La acción vuelve a leer Wallos cuando la última lectura es más antigua que el intervalo de actualización.
+
+## Ejemplos de escenas
+
+- **Recordatorio antes de un pago**: desencadenante «pago próximo», 3 días, todas las suscripciones; acción:
+  enviar un mensaje con `{{triggerEvent.data.text}}`.
+- **Resumen del lunes por la mañana**: cada lunes a las 8, acción «leer los próximos pagos», 7 días, y luego
+  hacer leer su `text` por el altavoz de la cocina.
+- **Vigilancia del presupuesto**: desencadenante «Cambio de estado de un dispositivo» sobre el coste mensual,
+  mayor que 100; acción: avisar a la familia por Telegram.
+
+## Privacidad y datos
+
+- La integración lee Wallos y nunca escribe en él.
+- Gladys guarda la clave de API como cualquier ajuste secreto, y nunca se escribe en los registros.
+- Los registros nunca contienen un importe, un nombre de suscripción ni la dirección de Wallos, ni siquiera en
+  nivel debug: solo números, identificadores y números de días.
+- Los nombres de las suscripciones se convierten en nombres de dispositivos, que puede renombrar.
+- El volumen de datos de la integración solo guarda los recordatorios ya enviados (identificadores y fechas).
+
+## Solución de problemas
+
+| Mensaje                                     | Qué hacer                                                                                       |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Wallos rechaza la clave de API              | La clave se copió en parte o es de otro Wallos: cópiela de nuevo (Perfil → Clave API)           |
+| Wallos no responde                          | Compruebe la dirección desde el equipo de Gladys (puerto, `http`/`https`) y que Wallos funcione |
+| El certificado de Wallos no es de confianza | Use la dirección `http` de la red local, o active «Aceptar un certificado autofirmado»          |
+| Esta dirección no responde como la API      | La dirección lleva a otra página (portal de acceso, proxy inverso): indique la de Wallos        |
+| Un dispositivo no tiene valor               | Añádalo en la pestaña Descubrir: solo los dispositivos añadidos reciben estados                 |
+
+Los registros de la integración (Integraciones → Wallos → registros) indican lo ocurrido; ponga
+`LOG_LEVEL=debug` para más detalle.
+
+## Límites
+
+- Solo lectura: no se puede añadir ni modificar ninguna suscripción desde Gladys.
+- Un solo Wallos, un solo usuario (el de la clave de API); los demás miembros de un hogar no se leen por
+  separado.
+- Las fechas de pago son las que guarda Wallos: las adelanta una vez al día con su propia tarea.
+- El recordatorio llega en la primera lectura del día: hasta un intervalo de actualización después de
+  medianoche.
+- Probada con un Wallos 5.10.0 real en Docker, aún no en una instalación de Gladys con un Wallos real: sus
+  comentarios son bienvenidos.

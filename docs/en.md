@@ -1,61 +1,132 @@
-# Demo Devices Template
+# Wallos
 
-This is the user documentation of the integration. Gladys re-hosts this file
-and shows a permanent **Documentation** link to it in the Configuration screen
-(in the user's language, with English as the fallback) — it is when
-configuring that the user needs it most. Keep the short onboarding hints in
-the `section` blocks of the manifest `config_schema`; put the long
-step-by-step (screenshots, troubleshooting…) here.
+Bring your subscriptions into Gladys: what they cost per month and per year, the next payments, and a
+reminder before each one, read from your own [Wallos](https://github.com/ellite/Wallos), the self-hosted
+subscription tracker.
+
+The integration only reads: it never writes to Wallos, never adds nor changes a subscription. It talks to
+your Wallos directly on your network, with your API key. Not affiliated with Wallos.
 
 ## What you get
 
-Six demo devices show up after installation: a weather station (real data
-from Open-Meteo), a switch, a dimmable light, a smart plug with power
-metering, a motion sensor and a camera.
+- A **Wallos device**: monthly cost and estimated yearly cost of your active subscriptions (in your main
+  currency), number of active subscriptions, days before the next payment and its name.
+- One **device per active subscription**: price of one payment, days before the next payment, and its date.
+- A **dashboard widget**: the monthly and yearly cost, then the next 8 payments.
+- A **scene trigger**: a payment due today, tomorrow, in 3 or 7 days.
+- A **scene action**: read the payments of the next 7, 14 or 31 days, as a sentence to send by message or
+  have read aloud.
+
+## Requirements
+
+- Gladys Assistant 5.1 or later.
+- Wallos (tested with 5.10.0), reachable from the Gladys host (same network, VPN or a public address).
+- The API key of your Wallos user.
 
 ## Configuration
 
-1. Open the **Configuration** tab of the integration.
-2. Set the **latitude** and **longitude** the demo weather station should
-   observe (they default to Paris), and pick your temperature unit.
-   The **refresh interval** sets how often the weather station and the
-   plug's power are read: every 5 minutes by default, every minute at most.
-3. Save: the devices appear in the **Discovery** tab, ready to be added.
+### Finding the API key
 
-The **Prefer the local connection** toggle drives the demo plug: it reports
-the channel it actually uses as a badge (local or cloud), with an orange dot
-when it runs degraded (local refused, cloud fallback).
+1. In Wallos, open your **Profile** (the menu under your avatar).
+2. The **API Key** section shows your key: copy it whole.
 
-## Actions
+The key gives access to every subscription of your user: keep it as secret as your password. The
+integration sends it in the body of its requests, never in the address, so it does not show in the logs of a
+reverse proxy.
 
-- **Test the weather provider** — performs a live request to Open-Meteo and
-  shows the current temperature and humidity under the button.
-- **Identify a device** — pick one of your devices in the list and it will
-  signal itself (the demo light "blinks" in the logs).
+### Settings
 
-## Scenes
+| Setting                          | What it does                                                                                |
+| -------------------------------- | ------------------------------------------------------------------------------------------- |
+| Address of Wallos                | The address you open Wallos with, e.g. `http://192.168.1.20:8282` or `https://subs.my.home` |
+| API key                          | The key copied above                                                                        |
+| Accept a self-signed certificate | Only for an `https` address whose certificate you made yourself                             |
+| Refresh interval                 | 15 or 30 minutes, 1 hour (default), 3 or 6 hours                                            |
+| Language of the texts            | Names of the features (at their creation) and sentences of the scenes                       |
 
-The integration adds its own cards to the scene editor (Gladys 5.1 or
-later), under the **Integrations** category:
+Save, then click **Test the connection**: the answer gives the version of Wallos, the number of active
+subscriptions and their monthly cost. Then open the **Discover** tab and add the **Wallos** device and the
+subscriptions you want to follow in Gladys.
 
-- **Motion detected** (trigger) — starts the scene when a demo motion sensor
-  sees something move. Optionally pick the sensor and what moved (person,
-  animal); left empty, any detection matches. The following actions can
-  read what moved with `{{triggerEvent.data.target}}`.
-- **Identify a device** (action) — makes the chosen device signal itself.
-  It returns whether the device could signal itself, so the following
-  actions can depend on it.
+## Devices
 
-## Dashboard
+| Device       | Features                                                                                                              |
+| ------------ | --------------------------------------------------------------------------------------------------------------------- |
+| Wallos       | Monthly cost, Estimated yearly cost, Active subscriptions, Days before the next payment, Next payment (name and date) |
+| Subscription | Price, Days before payment, Next payment date                                                                         |
 
-Add the **Demo status** widget to a dashboard: it shows the live
-temperature of the weather station and the power of the office plug, the
-connection the plug currently uses (orange when degraded) and the observed
-location. Its **Identify the light** button makes the demo light signal
-itself.
+The monthly cost is computed like the statistics page of Wallos: a weekly payment counts 4.35 times a month,
+a yearly one a twelfth, a one-time payment nothing; prices in another currency are converted with the
+exchange rates of Wallos (set them up in Wallos with a Fixer key, otherwise they count 1 for 1). The yearly
+cost is twelve times the monthly cost.
+
+Amounts in euros, dollars or pounds show their unit; another currency is added to the device name
+(`Gym (CHF)`). Only active subscriptions are listed. When the payment date of a subscription is past (auto
+renewal off), the date stays but the day count is left empty.
+
+To be warned when the monthly cost goes over a threshold, use the standard trigger of Gladys **"Device state
+change"** on the **Monthly cost** of the Wallos device, with the condition "greater": no need for a trigger
+of the integration.
+
+## Dashboard widget
+
+**Wallos: next payments** shows the monthly and estimated yearly cost, then the next 8 payments, soonest
+first: the subscription, its price and date, and a badge "today" in red, "tomorrow" or within 3 days in
+orange. Tap a payment to see its category. The footer gives the time of the last reading. It covers every
+active subscription of Wallos, added in Gladys or not.
+
+## Scene trigger
+
+**Wallos: payment due soon**: a payment of an active subscription is due today, tomorrow, in 3 or 7 days
+(choose one). Leave **Subscription** empty to be warned for all of them, or choose one subscription added in
+Gladys. It fires once per subscription and payment date, on that day, at the first reading of the day.
+Variables: name of the subscription, price, currency, payment date (YYYY-MM-DD) and a ready-made sentence.
+
+What was fired is kept in the integration's data: a restart fires nothing twice.
+
+## Scene action
+
+**Wallos: read the next payments**: the payments of the next 7, 14 or 31 days, soonest first, with their
+price, then the total in your main currency. Outputs: `text`, `count`, `total`.
+
+The action reads Wallos again when the last reading is older than the refresh interval.
+
+## Scene examples
+
+- **Reminder before a payment**: trigger "payment due soon", 3 days, every subscription; action: send a
+  message with `{{triggerEvent.data.text}}`.
+- **Monday morning brief**: every Monday at 8 am, action "read the next payments", 7 days, then have its
+  `text` read aloud by the speaker of the kitchen.
+- **Budget watch**: trigger "Device state change" on the monthly cost, greater than 100; action: notify the
+  family on Telegram.
+
+## Privacy and data
+
+- The integration reads Wallos and never writes to it.
+- The API key is stored by Gladys like any secret setting, and never written to the logs.
+- The logs never hold an amount, a subscription name or the address of Wallos, even at debug level: only
+  counts, identifiers and day counts.
+- Subscription names become device names, which you can rename.
+- The integration's data volume only keeps which reminders were sent (identifiers and dates).
 
 ## Troubleshooting
 
-The integration logs everything it does: check the integration logs from the
-Gladys UI (or `docker logs` on the host) with `LOG_LEVEL=debug` for the full
+| Message                                   | What to do                                                                                    |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Wallos refuses the API key                | The key was copied partly, or belongs to another Wallos: copy it again from Profile → API Key |
+| Wallos does not answer                    | Check the address from the Gladys host (port, `http`/`https`), and that Wallos is up          |
+| The certificate of Wallos is not trusted  | Use the `http` address on your network, or enable "Accept a self-signed certificate"          |
+| This address does not answer like the API | The address leads to another page (a login portal, a reverse proxy): give Wallos's own one    |
+| A device has no value                     | Add it in the Discover tab: only the devices added get states                                 |
+
+The logs of the integration (Integrations → Wallos → logs) say what happened; set `LOG_LEVEL=debug` for more
 detail.
+
+## Limits
+
+- Read only: no subscription can be added or changed from Gladys.
+- One Wallos, one user (the one of the API key); the other members of a household are not read separately.
+- Payment dates are the ones Wallos keeps: Wallos moves them forward once a day by its own task.
+- The reminder fires at the first reading of the day: up to one refresh interval after midnight.
+- Tested against a real Wallos 5.10.0 in Docker, not yet on a Gladys installation with a real Wallos:
+  feedback welcome.
