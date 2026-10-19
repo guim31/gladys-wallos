@@ -267,3 +267,6 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
   7 jours), à la première lecture du jour. Badge du widget : 16 caractères au plus (« dans 133 j »).
 - **Confidentialité** : aucun montant, nom d'abonnement, clé ni adresse dans les journaux, même en debug
   (`test/logs.test.js`).
+- **`read_payments`** compte chaque échéance de la fenêtre (un abonnement hebdomadaire paie plusieurs fois
+  en 31 jours) : `nextPayment` avance la date comme `strtotime` de PHP (31/01 + 1 mois = 03/03). Le coût
+  mensuel est sommé sans arrondi puis arrondi une fois, comme Wallos.

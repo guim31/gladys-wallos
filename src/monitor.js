@@ -50,7 +50,7 @@ const DAYS = PAYMENT_DAYS.map(Number);
 
 /**
  * The active subscriptions with a payment from `today` on, soonest first,
- * each with its `days` before the payment.
+ * each with its `days` before the payment: their next payment only.
  */
 export function upcoming(snapshot, today) {
   return (snapshot?.subscriptions ?? [])
@@ -319,7 +319,8 @@ export class Monitor {
       add('days_next', next?.days);
       addText(
         'next_name',
-        next ? `${next.name} · ${formatDay(next.nextDue, this.config.language)}` : null,
+        // "–" rather than nothing: the last name would stay shown otherwise.
+        next ? `${next.name} · ${formatDay(next.nextDue, this.config.language)}` : '–',
       );
       return states;
     }
@@ -404,10 +405,11 @@ export class Monitor {
   }
 
   async fire(key, line, data) {
-    // Ids and levels only: names and amounts stay out of the logs.
-    logger.info(`Scene trigger: ${line}`);
     try {
       await this.gladys.publishSceneEvent(key, data);
+      // Ids and day counts only: names and amounts stay out of the logs. After
+      // the event: a retried event is not logged again at every cycle.
+      logger.info(`Scene trigger: ${line}`);
       this.recovered('scene', 'Scene triggers work again');
       return true;
     } catch (err) {

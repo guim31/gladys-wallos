@@ -7,7 +7,7 @@
 import { createLogger } from '@gladysassistant/integration-sdk';
 import { upcoming } from './monitor.js';
 import { PHRASES, STATUS, formatAmount, render, when } from './texts.js';
-import { localDay } from './wallos.js';
+import { daysBetween, localDay, nextPayment } from './wallos.js';
 
 const logger = createLogger({ name: 'wallos-actions' });
 
@@ -38,8 +38,23 @@ export async function readPayments(monitor, fields = {}) {
   const phrases = PHRASES[language];
   const window = PAYMENT_WINDOWS.includes(String(fields.days)) ? Number(fields.days) : 7;
   const today = localDay(monitor.now());
-  const due = upcoming(snapshot, today).filter((item) => item.days <= window);
-  // The total counts each subscription once, converted to the main currency.
+  // Every payment within the window: a weekly subscription pays several times.
+  const due = [];
+  for (const item of upcoming(snapshot, today)) {
+    for (
+      let day = item.nextDue, n = 0;
+      day && n < 100;
+      day = nextPayment(day, item.cycle, item.frequency), n += 1
+    ) {
+      const days = daysBetween(today, day);
+      if (days > window) {
+        break;
+      }
+      due.push({ ...item, days });
+    }
+  }
+  due.sort((a, b) => a.days - b.days || a.name.localeCompare(b.name));
+  // The total in the main currency.
   const total =
     Math.round(due.reduce((sum, item) => sum + (item.price ?? 0) / item.rate, 0) * 100) / 100 || 0;
   if (due.length === 0) {

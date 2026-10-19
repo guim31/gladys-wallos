@@ -269,6 +269,12 @@
             "fr": "Abonnement",
             "de": "Abonnement",
             "es": "Suscripción"
+          },
+          "description": {
+            "en": "Empty: every subscription. Choose a subscription, not the Wallos device.",
+            "fr": "Vide : tous les abonnements. Choisissez un abonnement, pas l'appareil Wallos.",
+            "de": "Leer: alle Abonnements. Wähle ein Abonnement, nicht das Gerät Wallos.",
+            "es": "Vacío: todas las suscripciones. Elija una suscripción, no el dispositivo Wallos."
           }
         },
         {

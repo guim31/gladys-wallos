@@ -63,8 +63,7 @@ comptent 1 pour 1). Le coût annuel vaut douze fois le coût mensuel.
 
 Les montants en euros, dollars ou livres affichent leur unité ; une autre devise est ajoutée au nom de
 l'appareil (`Salle de sport (CHF)`). Seuls les abonnements actifs sont listés. Quand la date de paiement d'un
-abonnement est passée (renouvellement automatique désactivé), la date reste mais le nombre de jours est
-laissé vide.
+abonnement est passée (renouvellement automatique désactivé), la date reste mais le nombre de jours n'est plus mis à jour : il garde sa dernière valeur.
 
 Pour être prévenu quand le coût mensuel dépasse un seuil, utilisez le déclencheur standard de Gladys
 **« Changement d'état d'un appareil »** sur le **Coût mensuel** de l'appareil Wallos, avec la condition
@@ -82,7 +81,7 @@ ou non.
 
 **Wallos : paiement à venir** : un paiement d'un abonnement actif tombe aujourd'hui, demain, dans 3 ou
 7 jours (au choix). Laissez **Abonnement** vide pour être prévenu pour tous, ou choisissez un abonnement
-ajouté à Gladys. Il se déclenche une fois par abonnement et date de paiement, ce jour-là, à la première
+ajouté à Gladys (pas l'appareil Wallos, qui ne correspond jamais). Il se déclenche une fois par abonnement et date de paiement, ce jour-là, à la première
 lecture de la journée. Variables : nom de l'abonnement, prix, devise, date du paiement (AAAA-MM-JJ) et une
 phrase toute prête.
 

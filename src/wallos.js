@@ -71,6 +71,27 @@ export function localDay(ms) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
+/**
+ * The payment after `day` for a cycle, as PHP strtotime("+N months") counts
+ * (31/01 + 1 month gives 03/03, like Wallos). null for a one-time payment.
+ */
+export function nextPayment(day, cycle, frequency) {
+  const [y, m, d] = day.split('-').map(Number);
+  const every = Number(frequency) > 0 ? Number(frequency) : 1;
+  const shift = {
+    [CYCLES.DAY]: [0, 0, every],
+    [CYCLES.WEEK]: [0, 0, 7 * every],
+    [CYCLES.MONTH]: [0, every, 0],
+    [CYCLES.YEAR]: [every, 0, 0],
+  }[Number(cycle)];
+  if (!shift) {
+    return null;
+  }
+  return new Date(Date.UTC(y + shift[0], m - 1 + shift[1], d + shift[2]))
+    .toISOString()
+    .slice(0, 10);
+}
+
 /** Whole days from `from` to `to` (both YYYY-MM-DD). */
 export function daysBetween(from, to) {
   const ms = (day) => {
@@ -140,7 +161,6 @@ export function parseSubscription(raw, currencies) {
     if (String(raw.currency_id) !== String(currencies.mainId) && currency) {
       monthly /= currency.rate;
     }
-    monthly = round2(monthly);
   }
   return {
     id: String(raw.id),
@@ -159,11 +179,13 @@ export function parseSubscription(raw, currencies) {
 
 /** The summary of the active subscriptions, in the main currency. */
 export function summarize(subscriptions, mainCurrency) {
-  const monthly = round2(subscriptions.reduce((sum, item) => sum + (item.monthly ?? 0), 0));
+  // Summed unrounded and rounded once, as Wallos does.
+  const total = subscriptions.reduce((sum, item) => sum + (item.monthly ?? 0), 0);
+  const monthly = round2(total);
   return {
     currency: mainCurrency,
     monthlyCost: monthly,
-    yearlyCost: round2(monthly * 12),
+    yearlyCost: round2(total * 12),
     activeCount: subscriptions.length,
   };
 }

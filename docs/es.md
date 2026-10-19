@@ -62,7 +62,7 @@ doce veces el coste mensual.
 
 Los importes en euros, dólares o libras muestran su unidad; otra divisa se añade al nombre del dispositivo
 (`Gimnasio (CHF)`). Solo se listan las suscripciones activas. Cuando la fecha de pago de una suscripción ya
-pasó (renovación automática desactivada), la fecha se mantiene pero el número de días queda vacío.
+pasó (renovación automática desactivada), la fecha se mantiene pero el número de días deja de actualizarse: conserva su último valor.
 
 Para recibir un aviso cuando el coste mensual supere un umbral, use el desencadenante estándar de Gladys
 **«Cambio de estado de un dispositivo»** sobre el **Coste mensual** del dispositivo Wallos, con la condición
@@ -78,7 +78,7 @@ Cubre todas las suscripciones activas de Wallos, añadidas a Gladys o no.
 ## Desencadenantes de escena
 
 **Wallos: pago próximo**: un pago de una suscripción activa vence hoy, mañana, dentro de 3 o 7 días (elija
-uno). Deje **Suscripción** vacío para recibir avisos de todas, o elija una suscripción añadida a Gladys. Se
+uno). Deje **Suscripción** vacío para recibir avisos de todas, o elija una suscripción añadida a Gladys (no el dispositivo Wallos, que nunca coincide). Se
 dispara una vez por suscripción y fecha de pago, ese día, en la primera lectura del día. Variables: nombre de
 la suscripción, precio, divisa, fecha del pago (AAAA-MM-DD) y una frase lista para usar.
 

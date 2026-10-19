@@ -62,7 +62,7 @@ cost is twelve times the monthly cost.
 
 Amounts in euros, dollars or pounds show their unit; another currency is added to the device name
 (`Gym (CHF)`). Only active subscriptions are listed. When the payment date of a subscription is past (auto
-renewal off), the date stays but the day count is left empty.
+renewal off), the date stays but the day count is no longer updated: it keeps its last value.
 
 To be warned when the monthly cost goes over a threshold, use the standard trigger of Gladys **"Device state
 change"** on the **Monthly cost** of the Wallos device, with the condition "greater": no need for a trigger
@@ -79,7 +79,7 @@ active subscription of Wallos, added in Gladys or not.
 
 **Wallos: payment due soon**: a payment of an active subscription is due today, tomorrow, in 3 or 7 days
 (choose one). Leave **Subscription** empty to be warned for all of them, or choose one subscription added in
-Gladys. It fires once per subscription and payment date, on that day, at the first reading of the day.
+Gladys (not the Wallos device, which never matches). It fires once per subscription and payment date, on that day, at the first reading of the day.
 Variables: name of the subscription, price, currency, payment date (YYYY-MM-DD) and a ready-made sentence.
 
 What was fired is kept in the integration's data: a restart fires nothing twice.

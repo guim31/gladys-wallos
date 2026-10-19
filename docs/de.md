@@ -63,7 +63,7 @@ ein, sonst zählen sie 1 zu 1). Die Jahreskosten sind das Zwölffache der monatl
 
 Beträge in Euro, Dollar oder Pfund zeigen ihre Einheit; eine andere Währung wird an den Gerätenamen gehängt
 (`Fitnessstudio (CHF)`). Nur aktive Abonnements werden aufgeführt. Liegt das Zahlungsdatum eines Abonnements
-in der Vergangenheit (automatische Verlängerung aus), bleibt das Datum, die Anzahl Tage bleibt leer.
+in der Vergangenheit (automatische Verlängerung aus), bleibt das Datum, die Anzahl Tage wird nicht mehr aktualisiert: sie behält ihren letzten Wert.
 
 Um gewarnt zu werden, wenn die monatlichen Kosten eine Schwelle überschreiten, nutze den Standardauslöser
 von Gladys **„Gerätezustand ändert sich“** auf den **Monatlichen Kosten** des Geräts Wallos, mit der
@@ -81,7 +81,7 @@ hinzugefügt oder nicht.
 
 **Wallos: Zahlung bald fällig**: eine Zahlung eines aktiven Abonnements ist heute, morgen, in 3 oder 7 Tagen
 fällig (eins davon wählen). Lass **Abonnement** leer, um für alle gewarnt zu werden, oder wähle ein zu Gladys
-hinzugefügtes Abonnement. Er löst einmal pro Abonnement und Zahlungsdatum aus, an diesem Tag, bei der ersten
+hinzugefügtes Abonnement (nicht das Gerät Wallos, das nie passt). Er löst einmal pro Abonnement und Zahlungsdatum aus, an diesem Tag, bei der ersten
 Abfrage des Tages. Variablen: Name des Abonnements, Preis, Währung, Zahlungsdatum (JJJJ-MM-TT) und ein
 fertiger Satz.
 

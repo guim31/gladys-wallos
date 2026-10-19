@@ -13,9 +13,11 @@ import {
   WallosClient,
   amountOf,
   daysBetween,
+  nextPayment,
   parseCurrencies,
   parseSubscription,
   pricePerMonth,
+  summarize,
 } from '../src/wallos.js';
 import { fixture } from './helpers/world.js';
 
@@ -24,6 +26,7 @@ test('the address: scheme added, /api, page and slashes removed, credentials ref
   assert.equal(parseUrl(' https://wallos.example.org/ '), 'https://wallos.example.org');
   assert.equal(parseUrl('http://192.0.2.10/wallos/api/'), 'http://192.0.2.10/wallos');
   assert.equal(parseUrl('http://192.0.2.10/wallos/index.php'), 'http://192.0.2.10/wallos');
+  assert.equal(parseUrl('http://192.0.2.10/api/status/version.php'), 'http://192.0.2.10');
   assert.equal(parseUrl('http://user:pass@192.0.2.10'), null);
   assert.equal(parseUrl('http://192.0.2.10/?api_key=x'), null);
   assert.equal(parseUrl('not a url at all'), null);
@@ -75,6 +78,22 @@ test('the monthly price, as the statistics of Wallos compute it', () => {
   assert.equal(pricePerMonth(CYCLES.MONTH, 0, 9), 9);
 });
 
+test('the next payment of each cycle, as strtotime counts', () => {
+  assert.equal(nextPayment('2026-10-26', CYCLES.WEEK, 2), '2026-11-09');
+  assert.equal(nextPayment('2026-10-31', CYCLES.DAY, 3), '2026-11-03');
+  assert.equal(nextPayment('2026-01-31', CYCLES.MONTH, 1), '2026-03-03');
+  assert.equal(nextPayment('2026-03-01', CYCLES.YEAR, 1), '2027-03-01');
+  assert.equal(nextPayment('2026-11-15', CYCLES.ONCE, 1), null);
+});
+
+test('the monthly total is rounded once, as Wallos does', () => {
+  const items = Array.from({ length: 10 }, () => ({
+    monthly: pricePerMonth(CYCLES.WEEK, 1, 0.33),
+  }));
+  // 10 × 1.4355: 14.35, where rounding each first would give 14.40.
+  assert.equal(summarize(items, 'EUR').monthlyCost, 14.35);
+});
+
 test('the recorded answers: currencies and subscriptions', () => {
   const currencies = parseCurrencies(fixture('wallos/get_currencies.json'));
   assert.equal(currencies.main, 'EUR');
@@ -93,7 +112,7 @@ test('the recorded answers: currencies and subscriptions', () => {
     nextDue: '2027-03-01',
     category: 'Services cloud',
     rate: 1.08,
-    monthly: 1.16,
+    monthly: 15 / 12 / 1.08,
   });
 });
 

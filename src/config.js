@@ -47,9 +47,9 @@ export function parseUrl(text) {
     return null;
   }
   const path = url.pathname
+    .replace(/\/api(\/.*)?$/i, '')
     .replace(/\/[^/]+\.php$/i, '')
-    .replace(/\/+$/, '')
-    .replace(/\/api$/i, '');
+    .replace(/\/+$/, '');
   return `${url.protocol}//${url.host}${path}`;
 }
 

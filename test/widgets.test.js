@@ -74,8 +74,10 @@ test('read_payments: the payments within the chosen days, soonest first, and the
     total: 64.1,
   });
   ({ data } = await w.fake.sceneAction('read_payments', { days: '31' }));
-  assert.equal(data.outputs.count, 5);
-  assert.equal(data.outputs.total, 123.1);
+  // Up to 19/11: Box internet twice (19/10, 19/11), Netflix and Spotify once,
+  // Gym twice (26/10, 09/11; 23/11 is out), the Concert ticket once.
+  assert.equal(data.outputs.count, 7);
+  assert.equal(data.outputs.total, 162.59);
 });
 
 test('read_payments converts the total to the main currency', async (t) => {
