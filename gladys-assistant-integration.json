@@ -8,8 +8,8 @@
     "de": "Deine Wallos-Abonnements in Gladys: monatliche Kosten, nächste Zahlungen und Erinnerungen.",
     "es": "Sus suscripciones de Wallos en Gladys: coste mensual, próximos pagos y recordatorios."
   },
-  "version": "1.0.0",
-  "docker_image": "ghcr.io/guim31/gladys-wallos:1.0.0",
+  "version": "1.0.1",
+  "docker_image": "ghcr.io/guim31/gladys-wallos:1.0.1",
   "gladys_version": ">=5.1.0",
   "cover_image": "https://raw.githubusercontent.com/guim31/gladys-wallos/main/cover.png",
   "categories": ["services"],

@@ -1,6 +1,6 @@
 {
   "name": "gladys-wallos",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Wallos (subscription tracker) in Gladys Assistant: monthly cost, next payments and reminders.",
   "type": "module",
