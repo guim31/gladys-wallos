@@ -75,7 +75,8 @@ test('even at debug: no amount, no name, no API key, no address', async (t) => {
   api.down = 'network';
   await cycle(w);
   await w.fake.configUpdated({ ...CONFIG, api_key: 'wrong-key' });
-  const text = lines.map((line) => line.text).join('\n');
+  // Without the timestamp prefix: its milliseconds could match a number looked for below.
+  const text = lines.map(strip).join('\n');
   assert.ok(lines.length > 5);
   for (const secret of [
     CONFIG.api_key,
